@@ -57,24 +57,23 @@ func main() {
 }
 
 func HomeHandler(responseWriter http.ResponseWriter, request *http.Request) {
-
 	// Count the total number of images in the database
 	var imageQty int64
 	db.Model(&Image{}).Count(&imageQty)
 
-	// Grab the recent 6 images
+	// Grab the recent 6 images with both Filename and CreatedAt fields
 	var images []Image
-	db.Order("created_at desc").Limit(6).Find(&images)
+	db.Select("id, uploader, filename, created_at").Order("created_at desc").Limit(6).Find(&images)
 
 	// Read HTML content from file
-	htmlContent, err := os.ReadFile("frontend/index.html") // Update the path here
+	htmlContent, err := os.ReadFile("frontend/index.html")
 	if err != nil {
 		http.Error(responseWriter, "Unable to read HTML file", http.StatusInternalServerError)
 		return
 	}
 
 	// Create a template using html/template package for more dynamic content
-	template, err := template.New("index").Parse(string(htmlContent))
+	tmpl, err := template.New("index").Parse(string(htmlContent))
 	if err != nil {
 		http.Error(responseWriter, "Unable to parse HTML template", http.StatusInternalServerError)
 		return
@@ -93,7 +92,7 @@ func HomeHandler(responseWriter http.ResponseWriter, request *http.Request) {
 		Images:   images,
 	}
 
-	template.Execute(responseWriter, data)
+	tmpl.Execute(responseWriter, data)
 }
 
 func UploadHandler(responseWriter http.ResponseWriter, request *http.Request) {

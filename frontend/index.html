@@ -64,8 +64,9 @@
                 <div class="card">
                     <img src="../static/{{.Filename}}" class="card-img-top" alt="{{.Filename}}">
                     <div class="card-body">
-                        <p class="card-text">Uploader: {{.Uploader}}</p>
-                        <p class="card-text">Filename: {{.Filename}}</p>
+                        <p class="card-text"><b>Uploader</b>: <code>{{.Uploader}}</code></p>
+                        <p class="card-text"><b>Filename</b>: <code>{{.Filename}}</code></p>
+                        <p class="card-text"><b>Time</b>: <code>{{.CreatedAt.Format "2006-01-02 15:04:05 -0700"}}</code></p>
                     </div>
                 </div>
             </div>

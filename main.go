@@ -8,6 +8,7 @@ import (
 	"os"
 	"path/filepath"
 	"text/template"
+	"time"
 
 	"github.com/gorilla/mux"
 	"gorm.io/driver/mysql" // Import the MySQL driver
@@ -24,17 +25,26 @@ type Image struct {
 var db *gorm.DB
 
 func init() {
-	// Open a database connection using MySQL
+	// Open a database connection using MySQL with retry
 	var err error
-	mysqlUsername := "knightchaser"
-	mysqlPassword := "pass12##"
+	mysqlUsername := os.Getenv("MYSQL_USERNAME")
+	mysqlPassword := os.Getenv("MYSQL_PASSWORD")
 	mysqlProtocol := "tcp"
-	mysqlAccessIP := "127.0.0.1"
-	mysqlAccessPort := "3306"
 	mysqlTargetDatabaseName := "images"
-	dsn := fmt.Sprintf("%s:%s@%s(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local",
-		mysqlUsername, mysqlPassword, mysqlProtocol, mysqlAccessIP, mysqlAccessPort, mysqlTargetDatabaseName)
-	db, err = gorm.Open(mysql.Open(dsn), &gorm.Config{})
+	dsn := fmt.Sprintf("%s:%s@%s(mysql:3306)/%s?charset=utf8mb4&parseTime=True&loc=Local",
+		mysqlUsername, mysqlPassword, mysqlProtocol, mysqlTargetDatabaseName)
+
+	maxTryQty := 10
+	for try := 0; try < maxTryQty; try++ {
+		db, err = gorm.Open(mysql.Open(dsn), &gorm.Config{})
+		if err == nil {
+			break
+		}
+
+		fmt.Printf("[%d/%d] Failed to connect to the database. Retrying in 5 seconds...\n", try, maxTryQty)
+		time.Sleep(5 * time.Second)
+	}
+
 	if err != nil {
 		panic("Failed to connect to the database")
 	}
@@ -58,9 +68,9 @@ func main() {
 	http.Handle("/", muxRouter)
 
 	// Specifying ports
-	listeningPort := ":8080"
-	fmt.Printf("Server is running on %s\n", listeningPort)
-	http.ListenAndServe(listeningPort, nil)
+	listeningAddressPort := "0.0.0.0:8080"
+	fmt.Printf("Server is running on %s\n", listeningAddressPort)
+	http.ListenAndServe(listeningAddressPort, nil)
 }
 
 func HomeHandler(responseWriter http.ResponseWriter, request *http.Request) {

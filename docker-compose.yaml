@@ -1,0 +1,31 @@
+version: '3'
+services:
+  mysql:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: images
+      MYSQL_USER: knightchaser
+      MYSQL_PASSWORD: pass12##
+    networks:
+      internal_network:
+        ipv4_address: 192.168.1.77
+
+  backend:
+    build:
+      context: .
+    environment:
+      MYSQL_USERNAME: knightchaser
+      MYSQL_PASSWORD: pass12##
+    networks:
+      internal_network:
+        ipv4_address: 192.168.1.100
+    ports:
+      - "8080:8080"
+
+networks:
+  internal_network:
+    ipam:
+      config:
+        - subnet: 192.168.1.0/24
+          gateway: 192.168.1.1

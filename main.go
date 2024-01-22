@@ -10,7 +10,7 @@ import (
 	"text/template"
 
 	"github.com/gorilla/mux"
-	"gorm.io/driver/sqlite"
+	"gorm.io/driver/mysql" // Import the MySQL driver
 	"gorm.io/gorm"
 )
 
@@ -24,9 +24,17 @@ type Image struct {
 var db *gorm.DB
 
 func init() {
-	// Open a database connection
+	// Open a database connection using MySQL
 	var err error
-	db, err = gorm.Open(sqlite.Open("imageUploader.db"), &gorm.Config{})
+	mysqlUsername := "knightchaser"
+	mysqlPassword := "pass12##"
+	mysqlProtocol := "tcp"
+	mysqlAccessIP := "127.0.0.1"
+	mysqlAccessPort := "3306"
+	mysqlTargetDatabaseName := "images"
+	dsn := fmt.Sprintf("%s:%s@%s(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local",
+		mysqlUsername, mysqlPassword, mysqlProtocol, mysqlAccessIP, mysqlAccessPort, mysqlTargetDatabaseName)
+	db, err = gorm.Open(mysql.Open(dsn), &gorm.Config{})
 	if err != nil {
 		panic("Failed to connect to the database")
 	}
@@ -41,7 +49,7 @@ func main() {
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
 	http.Handle("/frontend/", http.StripPrefix("/frontend/", http.FileServer(http.Dir("frontend"))))
 
-	// Specify GET/POST action occuring position
+	// Specify GET/POST action occurring position
 	muxRouter := mux.NewRouter()
 	muxRouter.HandleFunc("/", HomeHandler).Methods("GET")
 	muxRouter.HandleFunc("/upload", UploadHandler).Methods("POST")
@@ -53,7 +61,6 @@ func main() {
 	listeningPort := ":8080"
 	fmt.Printf("Server is running on %s\n", listeningPort)
 	http.ListenAndServe(listeningPort, nil)
-
 }
 
 func HomeHandler(responseWriter http.ResponseWriter, request *http.Request) {

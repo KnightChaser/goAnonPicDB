@@ -15,6 +15,7 @@
             crossorigin="anonymous"></script>
     </head>
     <body>
+        <!-- navbar -->
         <nav class="navbar navbar-expand-lg bg-body-tertiary">
             <div class="container-fluid">
                 <a class="navbar-brand" href="#">goAnonPicDB</a>
@@ -36,6 +37,8 @@
                 </div>
             </div>
         </nav>
+
+        <!-- picture uploading form -->
         <div class="container mt-5">
             <form class="row g-3" action="/upload" method="post"
                 enctype="multipart/form-data">
@@ -57,6 +60,24 @@
                         class="btn btn-outline-secondary">Upload Image</button>
                 </div>
             </form>
+        </div>
+
+        <!-- picture showing form -->
+        <div class="container mt-5">
+            <h2>Recent Images</h2>
+            <div class="row">
+                {{range .}}
+                <div class="col-md-4 mb-3">
+                    <div class="card">
+                        <img src="/static/{{.Filename}}" class="card-img-top" alt="{{.Filename}}">
+                        <div class="card-body">
+                            <p class="card-text">Uploader: {{.Uploader}}</p>
+                            <p class="card-text">Filename: {{.Filename}}</p>
+                        </div>
+                    </div>
+                </div>
+                {{end}}
+            </div>
         </div>
     </body>
 </html>

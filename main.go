@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"text/template"
 
 	"github.com/gorilla/mux"
 	"gorm.io/driver/sqlite"
@@ -51,6 +52,7 @@ func main() {
 }
 
 func HomeHandler(responseWriter http.ResponseWriter, request *http.Request) {
+
 	// Read HTML content from file
 	htmlContent, err := os.ReadFile("upload_form.html")
 	if err != nil {
@@ -58,10 +60,22 @@ func HomeHandler(responseWriter http.ResponseWriter, request *http.Request) {
 		return
 	}
 
-	// Send the HTML content as the response
+	// Grab the recent 6 images
+	var images []Image
+	db.Order("created_at desc").Limit(6).Find(&images)
+
+	// Create a template using html/template package for more dynamic content,
+	// And link the file path of recent 6 images
+	tmpl, err := template.New("upload_form").Parse(string(htmlContent))
+	if err != nil {
+		http.Error(responseWriter, "Unable to parse HTML template", http.StatusInternalServerError)
+		return
+	}
+
+	// Send the HTML content with the image data as the response
 	responseWriter.Header().Set("Content-Type", "text/html")
 	responseWriter.WriteHeader(http.StatusOK)
-	responseWriter.Write(htmlContent)
+	tmpl.Execute(responseWriter, images)
 }
 
 func UploadHandler(responseWriter http.ResponseWriter, request *http.Request) {

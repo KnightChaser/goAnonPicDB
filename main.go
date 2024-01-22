@@ -13,8 +13,10 @@ import (
 	"gorm.io/gorm"
 )
 
+// Image struct
 type Image struct {
 	gorm.Model
+	Uploader string
 	Filename string
 }
 
@@ -73,6 +75,7 @@ func UploadHandler(responseWriter http.ResponseWriter, request *http.Request) {
 	}
 
 	file, handler, err := request.FormFile("image")
+	uploader := request.FormValue("uploader")
 	if err != nil {
 		log.Fatal("Error during fetching data from \"image\" field in the request body.")
 		http.Error(responseWriter, err.Error(), http.StatusBadRequest)
@@ -110,7 +113,7 @@ func UploadHandler(responseWriter http.ResponseWriter, request *http.Request) {
 	}
 
 	// Save file information to the database
-	img := Image{Filename: handler.Filename}
+	img := Image{Filename: handler.Filename, Uploader: uploader}
 	db.Create(&img)
 
 	// Redirect to home page

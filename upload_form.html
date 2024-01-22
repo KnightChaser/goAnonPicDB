@@ -69,9 +69,10 @@
     <!-- picture showing form -->
     <div class="container mt-5">
         <h2>Recent Images</h2>
+        <h6>{{.ImageQty}} pictures uploaded to the database.</h6>
         <div class="row">
-            {{range .}}
-            <div class="col-md-4 mb-3" id="recentImageTab">
+            {{range .Images}}
+            <div class="col-md-4 mb-3">
                 <div class="card">
                     <img src="/static/{{.Filename}}" class="card-img-top" alt="{{.Filename}}">
                     <div class="card-body">
@@ -83,6 +84,7 @@
             {{end}}
         </div>
     </div>
+
 </body>
 
 </html>

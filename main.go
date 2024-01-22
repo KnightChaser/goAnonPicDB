@@ -52,6 +52,13 @@ func main() {
 }
 
 func HomeHandler(responseWriter http.ResponseWriter, request *http.Request) {
+	// Count the total number of images in the database
+	var imageQty int64
+	db.Model(&Image{}).Count(&imageQty)
+
+	// Grab the recent 6 images
+	var images []Image
+	db.Order("created_at desc").Limit(6).Find(&images)
 
 	// Read HTML content from file
 	htmlContent, err := os.ReadFile("upload_form.html")
@@ -60,22 +67,27 @@ func HomeHandler(responseWriter http.ResponseWriter, request *http.Request) {
 		return
 	}
 
-	// Grab the recent 6 images
-	var images []Image
-	db.Order("created_at desc").Limit(6).Find(&images)
-
-	// Create a template using html/template package for more dynamic content,
-	// And link the file path of recent 6 images
+	// Create a template using html/template package for more dynamic content
 	tmpl, err := template.New("upload_form").Parse(string(htmlContent))
 	if err != nil {
 		http.Error(responseWriter, "Unable to parse HTML template", http.StatusInternalServerError)
 		return
 	}
 
-	// Send the HTML content with the image data as the response
+	// Send the HTML content with both the image count and the recent images as the response
 	responseWriter.Header().Set("Content-Type", "text/html")
 	responseWriter.WriteHeader(http.StatusOK)
-	tmpl.Execute(responseWriter, images)
+
+	// Create a struct to hold both the image count and the images
+	data := struct {
+		ImageQty int64
+		Images   []Image
+	}{
+		ImageQty: imageQty,
+		Images:   images,
+	}
+
+	tmpl.Execute(responseWriter, data)
 }
 
 func UploadHandler(responseWriter http.ResponseWriter, request *http.Request) {

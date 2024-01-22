@@ -2,8 +2,8 @@ package main
 
 import (
 	"fmt"
-	"html/template"
 	"io"
+	"log"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -48,57 +48,64 @@ func main() {
 	http.ListenAndServe(listeningPort, nil)
 }
 
-func HomeHandler(w http.ResponseWriter, r *http.Request) {
-	// Display the form to upload images
-	tmpl, err := template.New("index.html").Parse(`
-<!DOCTYPE html>
-<html>
-<head>
-	<title>Image Uploader</title>
-</head>
-<body>
-	<form action="/upload" method="post" enctype="multipart/form-data">
-		<input type="file" name="image" />
-		<input type="submit" value="Upload" />
-	</form>
-</body>
-</html>
-`)
+func HomeHandler(responseWriter http.ResponseWriter, request *http.Request) {
+	// Read HTML content from file
+	htmlContent, err := os.ReadFile("upload_form.html")
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		http.Error(responseWriter, "Unable to read HTML file", http.StatusInternalServerError)
 		return
 	}
 
-	tmpl.Execute(w, nil)
+	// Send the HTML content as the response
+	responseWriter.Header().Set("Content-Type", "text/html")
+	responseWriter.WriteHeader(http.StatusOK)
+	responseWriter.Write(htmlContent)
 }
 
-func UploadHandler(w http.ResponseWriter, r *http.Request) {
+func UploadHandler(responseWriter http.ResponseWriter, request *http.Request) {
 	// Parse the form data to get the uploaded file
-	err := r.ParseMultipartForm(10 << 20) // 10 MB limit
+	// Up to 25 MiB limit
+	err := request.ParseMultipartForm(25 << 20)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		log.Fatal("Error during handling parsing POST request in UploadHandler")
+		http.Error(responseWriter, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	file, handler, err := r.FormFile("image")
+	file, handler, err := request.FormFile("image")
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		log.Fatal("Error during fetching data from \"image\" field in the request body.")
+		http.Error(responseWriter, err.Error(), http.StatusBadRequest)
 		return
 	}
 	defer file.Close()
 
 	// Save the file to the server
+	imageSaveDirectoryName := "static"
+	_, err = os.Stat(imageSaveDirectoryName)
+	if os.IsNotExist(err) {
+		// Create the directory if it doesn't exist
+		err := os.Mkdir(imageSaveDirectoryName, 0755)
+		if err != nil {
+			panic(fmt.Sprintf("Error creating directory: %v\n", err))
+		}
+		fmt.Printf("Directory \"%s\" created because it didn't exist.\n", imageSaveDirectoryName)
+	} else if err != nil {
+		// Handle other errors that may occur during stat
+		panic(fmt.Sprintf("Error checking directory: %v\n", err))
+	}
+
 	savePath := filepath.Join("static", handler.Filename)
 	out, err := os.Create(savePath)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		http.Error(responseWriter, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	defer out.Close()
 
 	_, err = io.Copy(out, file)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		http.Error(responseWriter, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
@@ -107,5 +114,5 @@ func UploadHandler(w http.ResponseWriter, r *http.Request) {
 	db.Create(&img)
 
 	// Redirect to home page
-	http.Redirect(w, r, "/", http.StatusSeeOther)
+	http.Redirect(responseWriter, request, "/", http.StatusSeeOther)
 }

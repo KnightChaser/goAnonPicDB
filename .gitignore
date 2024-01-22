@@ -1,3 +1,6 @@
 # Exclude local SQLITE(DB) file
 imageUploader.db
 imageUploader.db-journal
+
+# Exclude local images
+static/*

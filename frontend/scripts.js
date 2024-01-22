@@ -1,3 +1,5 @@
+// With using Swal.Fire, detect clicking upload_button to submit forms with pictures
+// and add some user-interative logics for confirmation and cancellation.
 document.getElementById('upload_button').addEventListener('click', function () {
     var fileInput = document.getElementById('formFile');
     if (!fileInput || !fileInput.files || fileInput.files.length === 0) {

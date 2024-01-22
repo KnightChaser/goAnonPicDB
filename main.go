@@ -36,19 +36,20 @@ func init() {
 }
 
 func main() {
-	muxRouter := mux.NewRouter()
+	// Register subdirectories for serving files inside those directories
+	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
+	http.Handle("/frontend/", http.StripPrefix("/frontend/", http.FileServer(http.Dir("frontend"))))
 
+	muxRouter := mux.NewRouter()
 	muxRouter.HandleFunc("/", HomeHandler).Methods("GET")
 	muxRouter.HandleFunc("/upload", UploadHandler).Methods("POST")
-
-	// Serve static files (images)
-	muxRouter.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("./static/"))))
 
 	http.Handle("/", muxRouter)
 
 	listeningPort := ":8080"
-	fmt.Printf("Server is running on %s", listeningPort)
+	fmt.Printf("Server is running on %s\n", listeningPort)
 	http.ListenAndServe(listeningPort, nil)
+
 }
 
 func HomeHandler(responseWriter http.ResponseWriter, request *http.Request) {
@@ -61,14 +62,14 @@ func HomeHandler(responseWriter http.ResponseWriter, request *http.Request) {
 	db.Order("created_at desc").Limit(6).Find(&images)
 
 	// Read HTML content from file
-	htmlContent, err := os.ReadFile("upload_form.html")
+	htmlContent, err := os.ReadFile("frontend/index.html") // Update the path here
 	if err != nil {
 		http.Error(responseWriter, "Unable to read HTML file", http.StatusInternalServerError)
 		return
 	}
 
 	// Create a template using html/template package for more dynamic content
-	tmpl, err := template.New("upload_form").Parse(string(htmlContent))
+	tmpl, err := template.New("index").Parse(string(htmlContent))
 	if err != nil {
 		http.Error(responseWriter, "Unable to parse HTML template", http.StatusInternalServerError)
 		return

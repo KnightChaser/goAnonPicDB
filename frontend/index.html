@@ -11,9 +11,12 @@
 </head>
 
 <body>
+    <!-- navbar -->
     <nav class="navbar navbar-expand-lg bg-body-tertiary" id="navbar">
         <div class="container-fluid">
-            <a class="navbar-brand" href="/">goAnonPicDB</a>
+            <a class="navbar-brand" href="/">
+                <b>goAnonPicDB</b>
+            </a>
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                     <li class="nav-item">
@@ -32,17 +35,16 @@
         </div>
     </nav>
 
+    <!-- picture submitting form -->
     <div class="container mt-5">
         <form class="row g-3" id="uploading_form" action="/upload" method="post" enctype="multipart/form-data">
             <div class="col-md-4">
-                <label for="nickname" class="form-label">Who are
-                    you?</label>
+                <label for="nickname" class="form-label"><b>Who are you?</b></label>
                 <input type="text" class="form-control" id="uploader" name="uploader" placeholder="anonymous"
                     value="anonymous">
             </div>
             <div class="col-md-4">
-                <label for="formFile" class="form-label">Choose an image
-                    file</label>
+                <label for="formFile" class="form-label"><b>Choose an image file</b></label>
                 <input class="form-control" type="file" name="image" accept="image/*" id="formFile">
             </div>
             <div class="col-md-4">
@@ -52,9 +54,10 @@
         </form>
     </div>
 
+    <!-- picture showing zone -->
     <div class="container mt-5">
-        <h2>Recent Images</h2>
-        <h6>{{.ImageQty}} pictures uploaded to the database.</h6>
+        <h2><b>Recent Images</b></h2>
+        <h6><b>{{.ImageQty}} pictures</b> uploaded to the database.</h6>
         <div class="row">
             {{range .Images}}
             <div class="col-md-4 mb-3">

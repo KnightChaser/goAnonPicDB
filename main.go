@@ -37,15 +37,19 @@ func init() {
 
 func main() {
 	// Register subdirectories for serving files inside those directories
+	http.Handle("/asset/", http.StripPrefix("/asset", http.FileServer(http.Dir("asset"))))
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
 	http.Handle("/frontend/", http.StripPrefix("/frontend/", http.FileServer(http.Dir("frontend"))))
 
+	// Specify GET/POST action occuring position
 	muxRouter := mux.NewRouter()
 	muxRouter.HandleFunc("/", HomeHandler).Methods("GET")
 	muxRouter.HandleFunc("/upload", UploadHandler).Methods("POST")
 
+	// Default
 	http.Handle("/", muxRouter)
 
+	// Specifying ports
 	listeningPort := ":8080"
 	fmt.Printf("Server is running on %s\n", listeningPort)
 	http.ListenAndServe(listeningPort, nil)
@@ -53,6 +57,7 @@ func main() {
 }
 
 func HomeHandler(responseWriter http.ResponseWriter, request *http.Request) {
+
 	// Count the total number of images in the database
 	var imageQty int64
 	db.Model(&Image{}).Count(&imageQty)
@@ -69,7 +74,7 @@ func HomeHandler(responseWriter http.ResponseWriter, request *http.Request) {
 	}
 
 	// Create a template using html/template package for more dynamic content
-	tmpl, err := template.New("index").Parse(string(htmlContent))
+	template, err := template.New("index").Parse(string(htmlContent))
 	if err != nil {
 		http.Error(responseWriter, "Unable to parse HTML template", http.StatusInternalServerError)
 		return
@@ -88,7 +93,7 @@ func HomeHandler(responseWriter http.ResponseWriter, request *http.Request) {
 		Images:   images,
 	}
 
-	tmpl.Execute(responseWriter, data)
+	template.Execute(responseWriter, data)
 }
 
 func UploadHandler(responseWriter http.ResponseWriter, request *http.Request) {
@@ -110,7 +115,7 @@ func UploadHandler(responseWriter http.ResponseWriter, request *http.Request) {
 	}
 	defer file.Close()
 
-	// Save the file to the server
+	// Save the file to the server. The image will be saved at dir "/${imageSaveDirectoryName}"
 	imageSaveDirectoryName := "static"
 	_, err = os.Stat(imageSaveDirectoryName)
 	if os.IsNotExist(err) {
@@ -125,6 +130,7 @@ func UploadHandler(responseWriter http.ResponseWriter, request *http.Request) {
 		panic(fmt.Sprintf("Error checking directory: %v\n", err))
 	}
 
+	// Create picture saving path
 	savePath := filepath.Join("static", handler.Filename)
 	out, err := os.Create(savePath)
 	if err != nil {
@@ -133,6 +139,7 @@ func UploadHandler(responseWriter http.ResponseWriter, request *http.Request) {
 	}
 	defer out.Close()
 
+	// Save image to the created path
 	_, err = io.Copy(out, file)
 	if err != nil {
 		http.Error(responseWriter, err.Error(), http.StatusInternalServerError)

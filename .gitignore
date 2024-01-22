@@ -1,0 +1,3 @@
+# Exclude local SQLITE(DB) file
+imageUploader.db
+imageUploader.db-journal

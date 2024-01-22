@@ -5,11 +5,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>goAnonPicDB</title>
+    <!--Include bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
         crossorigin="anonymous"></script>
+    <!-- Include SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10" type="text/javascript"></script>
     <style>
         @font-face {
             font-family: 'IBMPlexSans';
@@ -46,8 +49,8 @@
     </nav>
 
     <!-- picture uploading form -->
-    <div class="container mt-5" id="uploading_form">
-        <form class="row g-3" action="/upload" method="post" enctype="multipart/form-data">
+    <div class="container mt-5">
+        <form class="row g-3" id="uploading_form" action="/upload" method="post" enctype="multipart/form-data">
             <div class="col-md-4">
                 <label for="nickname" class="form-label">Who are
                     you?</label>
@@ -61,7 +64,7 @@
             </div>
             <div class="col-md-4">
                 <label class="form-label"></label>
-                <button type="submit" class="btn btn-outline-secondary">Upload Image</button>
+                <button type="button" class="btn btn-outline-secondary" id="upload_button">Upload Image</button>
             </div>
         </form>
     </div>
@@ -85,6 +88,49 @@
         </div>
     </div>
 
+    <script>
+                document.getElementById('upload_button').addEventListener('click', function () {
+            // Check if an image has been selected
+            var fileInput = document.getElementById('formFile');
+            if (!fileInput || !fileInput.files || fileInput.files.length === 0) {
+                // No image selected, show an alert
+                Swal.fire({
+                    icon: 'error',
+                    title: 'No image selected',
+                    text: 'Please choose an image to upload.',
+                    showConfirmButton: false,
+                    timerProgressBar: true,
+                    timer: 1500
+                });
+                return;  // Stop further execution
+            }
+    
+            // Ask user for confirmation
+            Swal.fire({
+                title: 'Are you sure?',
+                text: 'Do you want to proceed with the upload?',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'Yes, proceed',
+                cancelButtonText: 'No, cancel',
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Trigger form submission
+                    document.getElementById('uploading_form').submit();
+                } else {
+                    // User clicked "No, cancel"
+                    Swal.fire({
+                        icon: 'info',
+                        title: 'Upload canceled',
+                        showConfirmButton: false,
+                        timerProgressBar: true,
+                        timer: 1500 
+                    });
+                }
+            });
+        });
+    </script>
+    
 </body>
 
 </html>

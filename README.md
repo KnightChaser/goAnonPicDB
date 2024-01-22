@@ -9,10 +9,10 @@
 
 **goAnonPicDB** is a simple web service that allows users to anonymously upload images. It is built with Go and uses `GORM` as the **ORM (Object-Relational Mapping)** library. The images are stored in a MySQL database. It might be a good example for learning how to organize applications with `docker` and `docker-compose`.
 
-> **Preview**
-<br>User interface (web)
+## **Preview**
+<br>**User interface (web)**
 <img src="./readme_pictures/webpage.png">
-<br>Database managing uploaded pictures via filepath (real image data are uploaded to `/static`)
+<br>**Database managing uploaded pictures via filepath (real image data are uploaded to `/static`)**
 <img src="./readme_pictures/db.png">
 
 ## Feature

@@ -30,7 +30,7 @@ func init() {
 	mysqlUsername := os.Getenv("MYSQL_USERNAME")
 	mysqlPassword := os.Getenv("MYSQL_PASSWORD")
 	mysqlProtocol := "tcp"
-	mysqlTargetDatabaseName := "images"
+	mysqlTargetDatabaseName := os.Getenv("MYSQL_DATABASE_NAME")
 	dsn := fmt.Sprintf("%s:%s@%s(mysql:3306)/%s?charset=utf8mb4&parseTime=True&loc=Local",
 		mysqlUsername, mysqlPassword, mysqlProtocol, mysqlTargetDatabaseName)
 

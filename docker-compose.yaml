@@ -3,10 +3,10 @@ services:
   mysql:
     image: mysql:8.0
     environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: images
-      MYSQL_USER: knightchaser
-      MYSQL_PASSWORD: pass12##
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE_NAME}
+      MYSQL_USER: ${MYSQL_USERNAME}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     networks:
       internal_network:
         ipv4_address: 192.168.1.77
@@ -15,8 +15,8 @@ services:
     build:
       context: .
     environment:
-      MYSQL_USERNAME: knightchaser
-      MYSQL_PASSWORD: pass12##
+      MYSQL_USERNAME: ${MYSQL_USERNAME}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     networks:
       internal_network:
         ipv4_address: 192.168.1.100

@@ -31,40 +31,13 @@
     cd goAnonPicDB
     ```
 
-2. (optional) Modify `docker-compose.yaml` for preconfigured environmental variables.
+2. (optional) Modify `.env` for preconfigured environmental variables (will be applied to `docker-compose.yaml`).
 
     ```yaml
-    version: '3'
-    services:
-    mysql:
-        image: mysql:8.0
-        environment:
-        MYSQL_ROOT_PASSWORD: root   # root password
-        MYSQL_DATABASE: images      # db name for images (should be correspondned to main.go init() config)
-        MYSQL_USER: knightchaser    # non-root username
-        MYSQL_PASSWORD: pass12##    # non-root password
-        networks:
-        internal_network:
-            ipv4_address: 192.168.1.77
-
-    backend:
-        build:
-        context: .
-        environment:
-        MYSQL_USERNAME: knightchaser # non-root username
-        MYSQL_PASSWORD: pass12##     # non-root password
-        networks:
-        internal_network:
-            ipv4_address: 192.168.1.100
-        ports:
-        - "8080:8080"
-
-    networks:
-    internal_network:
-        ipam:
-        config:
-            - subnet: 192.168.1.0/24
-            gateway: 192.168.1.1
+    MYSQL_ROOT_PASSWORD=root        # (not used in this service actually)
+    MYSQL_DATABASE_NAME=images      # The name of database where image filepath is stored
+    MYSQL_USERNAME=knightchaser     # The username of database (actually used)
+    MYSQL_PASSWORD=goanonpicdb      # The password of database (actually used)
     ```
 
 3. Build and run the Docker containers:
@@ -78,7 +51,7 @@
 
 ## To-Do
 - [x] Dockerize applications
-- [ ] Create `.env` file and manage cross-service environmental variables and constants (Or do the same thing with other methods)
+- [x] Create `.env` file and manage cross-service environmental variables and constants (Or do the same thing with other methods)
 
 ## Contributing
 

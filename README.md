@@ -52,6 +52,7 @@
 ## To-Do
 - [x] Dockerize applications
 - [x] Create `.env` file and manage cross-service environmental variables and constants (Or do the same thing with other methods)
+- [ ] Complete GitHub CI/CD Integration with GitHub Action for automatic Docker deployment.
 
 ## Contributing
 

@@ -3,11 +3,15 @@
 ![Go](https://img.shields.io/badge/go-%2300ADD8.svg?style=for-the-badge&logo=go&logoColor=white)
 ![Docker](https://img.shields.io/badge/docker-%230db7ed.svg?style=for-the-badge&logo=docker&logoColor=white)
 ![MySQL](https://img.shields.io/badge/mysql-%2300f.svg?style=for-the-badge&logo=mysql&logoColor=white)
+![GitHub Actions](https://img.shields.io/badge/github%20actions-%232671E5.svg?style=for-the-badge&logo=githubactions&logoColor=white)
 ![Bootstrap](https://img.shields.io/badge/bootstrap-%238511FA.svg?style=for-the-badge&logo=bootstrap&logoColor=white)
 ![Windows](https://img.shields.io/badge/Windows-0078D6?style=for-the-badge&logo=windows&logoColor=white)
 ![Ubuntu](https://img.shields.io/badge/Ubuntu-E95420?style=for-the-badge&logo=ubuntu&logoColor=white)
 
+
 **goAnonPicDB** is a simple web service that allows users to anonymously upload images. It is built with Go and uses `GORM` as the **ORM (Object-Relational Mapping)** library. The images are stored in a MySQL database. It might be a good example for learning how to organize applications with `docker` and `docker-compose`.
+
+**CI/CD status**: [![automatic-docker-deployment](https://github.com/KnightChaser/goAnonPicDB/actions/workflows/CICD.yml/badge.svg)](https://github.com/KnightChaser/goAnonPicDB/actions/workflows/CICD.yml)
 
 ## **Preview**
 <br>**User interface (web)**
@@ -52,7 +56,7 @@
 ## To-Do
 - [x] Dockerize applications
 - [x] Create `.env` file and manage cross-service environmental variables and constants (Or do the same thing with other methods)
-- [ ] Complete GitHub CI/CD Integration with GitHub Action for automatic Docker deployment.
+- [X] Complete GitHub CI/CD Integration with GitHub Action for automatic Docker deployment. DockerHub release will be visible at **[`knightchaser/goanonpicdb`](https://hub.docker.com/r/knightchaser/goanonpicdb)**
 
 ## Contributing
 
